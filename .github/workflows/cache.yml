@@ -1,0 +1,75 @@
+name: Cache Prime and Verify
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Use a small language example — node/npm — adjust if you prefer pip, cargo, etc.
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install deps
+        run: |
+          # create a package.json and a small node_modules footprint for caching demonstration
+          if [ ! -f package.json ]; then
+            cat > package.json <<'JSON'
+{
+  "name": "cache-demo",
+  "version": "1.0.0",
+  "dependencies": {
+    "left-pad": "1.3.0"
+  }
+}
+JSON
+          fi
+          npm install --no-audit --no-fund
+
+      - name: Restore cache (primary)
+        id: cache-primary
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: cache-1798f29
+          restore-keys: |
+            cache-1798f29
+
+      - name: prime-cache-1798f29
+        id: prime
+        run: |
+          # actions/cache v4 exposes output "cache-hit" when restore happens
+          echo "Cache primary output: ${{ steps.cache-primary.outputs.cache-hit }}"
+          if [ "${{ steps.cache-primary.outputs.cache-hit }}" = "true" ]; then
+            echo "Cache result: HIT"
+          else
+            echo "Cache result: MISS"
+          fi
+
+      - name: Save cache (ensure cache is stored if miss)
+        if: steps.cache-primary.outputs.cache-hit != 'true'
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.npm
+            node_modules
+          key: cache-1798f29
+
+      - name: Final check
+        run: |
+          echo "node_modules size:"
+          du -sh node_modules || true
