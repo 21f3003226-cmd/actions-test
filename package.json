@@ -1,0 +1,18 @@
+{
+  "name": "app-generator",
+  "version": "1.0.0",
+  "description": "Generates and deploys web applications based on briefs.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@octokit/rest": "^22.0.0",
+    "axios": "^1.12.2",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0"
+  }
+}
