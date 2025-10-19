@@ -9,12 +9,12 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# Enable CORS for any origin, allow GET requests
+# Enable CORS for any origin, allow common methods (incl. OPTIONS for preflight)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
     allow_credentials=False,
-    allow_methods=["GET"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
     allow_headers=["*"],
 )
 
