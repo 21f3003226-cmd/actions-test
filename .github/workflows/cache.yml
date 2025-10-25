@@ -5,6 +5,8 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+run-name: Cache Prime and Verify run for 21f3003226@ds.study.iitm.ac.in by @${{ github.actor }}
+
 permissions:
   contents: read
   actions: write
