@@ -1,11 +1,13 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const { octokit } = require('./src/github');
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 8000;
 const SECRET = process.env.SECRET;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
@@ -66,6 +68,23 @@ app.post('/api-endpoint', (req, res) => {
       res.status(500).json({ error: 'Failed to deploy app' });
     }
   })();
+});
+
+const rag = require('./src/rag');
+
+app.get('/search', (req, res) => {
+  const query = req.query.q;
+  if (!query) {
+    return res.status(400).json({ error: 'Query parameter "q" is required.' });
+  }
+
+  const answer = rag.search(query);
+  const response = {
+    answer: answer,
+    sources: 'typescript-book'
+  };
+
+  res.json(response);
 });
 
 app.get('/', (req, res) => {
